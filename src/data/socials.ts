@@ -7,27 +7,22 @@ export interface SocialLink {
 export const socials: SocialLink[] = [
   {
     platform: 'LinkedIn',
-    url: 'https://linkedin.com/in/naufalma', // Placeholder
+    url: 'https://www.linkedin.com/in/naufal-muhamad-adzkia/', // Placeholder
     icon: 'linkedin'
   },
   {
     platform: 'GitHub',
-    url: 'https://github.com/naufalma', // Placeholder
+    url: 'https://github.com/naufalmaa', // Placeholder
     icon: 'github'
   },
   {
-    platform: 'Medium',
-    url: 'https://medium.com/@naufalma', // Placeholder
-    icon: 'medium' // Might need to use a custom icon if Lucide doesn't have it, but pen-tool or similar works
-  },
-  {
     platform: 'Email',
-    url: 'mailto:contact@example.com', // Placeholder
+    url: 'mailto:naufalmadzkia@gmail.com', // Placeholder
     icon: 'mail'
   },
   {
     platform: 'Resume',
-    url: '/resume.pdf', // Placeholder
+    url: 'asset/resume/CV ATS_Naufal MA.pdf', // Placeholder
     icon: 'file-text'
   }
 ];

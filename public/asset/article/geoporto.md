@@ -128,7 +128,7 @@ This project taught me that building software is often less about code and more 
 I also learned that successful AI systems depend heavily on data organization. Good retrieval starts long before the model generates an answer. It starts with clean relationships, meaningful metadata, and thoughtful information architecture.
 
 Most importantly, this project reinforced something I already suspected:
-
+            
 > The future of technical workflows will not be driven solely by better analysis tools. It will be driven by making knowledge easier to access.
 
 ---
