@@ -43,3 +43,6 @@ next-env.d.ts
 
 /src/generated/prisma
 node_modules
+
+# local-only archive (files taken off the public site)
+/.archive/

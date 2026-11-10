@@ -16,4 +16,8 @@ export const impactData: ImpactData[] = [
     id: "impact-3",
     description: "Bridged domain expertise and technology to digitize operational processes.",
   },
+  {
+    id: "impact-4",
+    description: "Tuned an AI assistant to answer exploration questions in the evaluators' own vocabulary, and moved its platform onto the PPDM 3.9 industry data standard.",
+  },
 ];

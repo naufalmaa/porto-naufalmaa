@@ -1,124 +1,96 @@
 import { PrismaClient } from '@prisma/client'
-import fs from 'fs'
+import fs from 'node:fs'
+import path from 'node:path'
+import { validateArticle } from '../lib/article-validate'
 
-const prisma = new PrismaClient()
+/**
+ * Writes the Geosurvai project (a row of the Project table) from public/asset/article/geosurvai-v3.md.
+ *
+ *   pnpm seed:geosurvai -- --dry-run   check the article, show what would change, write nothing
+ *   pnpm seed:geosurvai                back up the current row to .archive/backups/, upsert, then read it back
+ *
+ * DATABASE_URL decides which database is written: the one in .env is the live site's.
+ */
 
-async function seed() {
-  const rawMd = fs.readFileSync('public/asset/article/geosurvai-v2.md', 'utf-8')
-  
-  let content = rawMd
-    .replace('[Insert Image: GeoSurvai Hero — Dashboard Overview with Map and Analytics]', '')
-    .replace(
-      'This workflow didn\'t just digitize the old process. It **eliminated the repetitive parts** and gave everyone more time for the work that actually matters: analysis, strategy, and decision-making.',
-      'This workflow didn\'t just digitize the old process. It **eliminated the repetitive parts** and gave everyone more time for the work that actually matters: analysis, strategy, and decision-making.\n\n[CAROUSEL_PLACEHOLDER]'
-    )
-    .replace(
-      '[Insert Image: Interactive Map — Survey Coverage with WK Boundaries and Activity Points]',
-      '[CAROUSEL: /asset/projects/geosurvai/02_Interactive_Map-1.png, /asset/projects/geosurvai/02_Interactive_Map-2.png]'
-    )
-    .replace(
-      '[Insert Image: Survey Project Detail Page — Summary, Gantt Chart, and Progress Monitoring]',
-      '[CAROUSEL: /asset/projects/geosurvai/03_Project_Dashboard-1.png, /asset/projects/geosurvai/03_Project_Dashboard-2.png, /asset/projects/geosurvai/03_Project_Dashboard-3.png]'
-    )
-    .replace(
-      '[Insert Image: Contractor Form Interface — Data Entry and Document Upload]',
-      '[CAROUSEL: /asset/projects/geosurvai/04_Contractor_form-1.png, /asset/projects/geosurvai/04_Contractor_form-2.png, /asset/projects/geosurvai/04_Contractor_form-3.png]'
-    )
-    .replace(
-      '[Insert Image: AFE Analytics — Benchmark Charts and Cost Composition]',
-      '[CAROUSEL: /asset/projects/geosurvai/05_Cost_Intelligence_Dashboard-1.png, /asset/projects/geosurvai/05_Cost_Intelligence_Dashboard-2.png, /asset/projects/geosurvai/05_Cost_Intelligence_Dashboard-3.png, /asset/projects/geosurvai/05_Cost_Intelligence_Dashboard-4.png, /asset/projects/geosurvai/05_Cost_Intelligence_Dashboard-5.png]'
-    )
-    .replace(
-      '[Insert Image: Study Dashboard — Plan vs. Actual Cumulative S-Curves]',
-      '[CAROUSEL: /asset/projects/geosurvai/06_Study_dashboard-1.png, /asset/projects/geosurvai/06_Study_dashboard-2.png]'
-    )
-    .replace(
-      '[Insert Image: Exploration Catalog — Grid View with Thumbnails and Document Links]',
-      '![Exploration Catalog — Grid View with Thumbnails and Document Links](/asset/projects/geosurvai/07_Exploration_catalog.png)'
-    )
-    .replace(
-      '[Insert Image: Annual Seismic Map — Parameter Bubble Map with Color Scale]',
-      '![Annual Seismic Map — Parameter Bubble Map with Color Scale](/asset/projects/geosurvai/08_Annual_Seismic_Parameter.png)'
-    )
-    .replace(
-      '[Insert Image: Automated Weekly Report Output]',
-      '![Automated Weekly Report Output](/asset/projects/geosurvai/09_Automated_Weekly_Report.png)'
-    )
-    .replace(
-      '[Insert Image: Zara AI Assistant Interface — Chat Query with Data Response]',
-      '![Zara AI Assistant Interface — Chat Query with Data Response](/asset/projects/geosurvai/10_Zara_AI_Assistant.png)'
-    )
+const SLUG = 'geosurvai'
+const ARTICLE = 'public/asset/article/geosurvai-v3.md'
+
+const record = {
+  title: 'Geosurvai: Exploration Oversight, Rebuilt on Data and AI',
+  excerpt:
+    "A platform for SKK Migas that moves exploration surveys, permits, and costs out of email and spreadsheets, with Zara, an AI assistant tuned to answer in its users' own language.",
+  coverImage: '/asset/projects/geosurvai/cover.webp',
+  galleryImages: [] as string[],
+  tags: ['data-ai', 'geoscience'],
+  priority: 95,
+  featured: true,
+  published: true,
+}
+
+async function seed(prisma: PrismaClient, dryRun: boolean) {
+  const content = fs.readFileSync(ARTICLE, 'utf-8')
+
+  const errors = validateArticle(content)
+  if (!fs.existsSync(path.join('public', record.coverImage))) errors.push(`missing file: ${record.coverImage}`)
+  if (errors.length) {
+    console.error(`The article is not ready:\n${errors.map((e) => `  - ${e}`).join('\n')}`)
+    process.exit(1)
+  }
+
+  const before = await prisma.project.findUnique({ where: { slug: SLUG } })
+  if (before) {
+    const sameContent = before.content === content
+    console.log(`Current row: "${before.title}", ${before.content.length} characters, content ${sameContent ? 'unchanged' : 'will change'}`)
+    if (!dryRun) {
+      const dir = path.join('.archive', 'backups')
+      fs.mkdirSync(dir, { recursive: true })
+      const file = path.join(dir, `${SLUG}-${new Date().toISOString().replace(/[:.]/g, '-')}.json`)
+      fs.writeFileSync(file, JSON.stringify(before, null, 2))
+      console.log(`Backed up the current row to ${file}`)
+    }
+  } else {
+    console.log('No row for this slug yet: it will be created')
+  }
+  console.log(`New row: "${record.title}", ${content.length} characters`)
+  if (dryRun) {
+    console.log('Dry run: nothing written.')
+    return
+  }
 
   await prisma.project.upsert({
-    where: { slug: 'geosurvai' },
-    update: {
-      title: 'GeoSurvai: A New Standard for Oil & Gas Exploration Monitoring',
-      excerpt: 'An integrated exploration management and auditing platform for SKK Migas, centralizing survey workflows, cost intelligence, automated weekly reporting, and AI assistance across Indonesia.',
-      content: content,
-      coverImage: '/asset/projects/geosurvai/01_GeoSurvai_Hero.png',
-      galleryImages: [
-        '/asset/projects/geosurvai/02_Interactive_Map-1.png',
-        '/asset/projects/geosurvai/03_Project_Dashboard-1.png',
-        '/asset/projects/geosurvai/04_Contractor_form-1.png',
-        '/asset/projects/geosurvai/05_Cost_Intelligence_Dashboard-1.png',
-        '/asset/projects/geosurvai/06_Study_dashboard-1.png',
-        '/asset/projects/geosurvai/07_Exploration_catalog.png',
-        '/asset/projects/geosurvai/08_Annual_Seismic_Parameter.png',
-        '/asset/projects/geosurvai/09_Automated_Weekly_Report.png',
-        '/asset/projects/geosurvai/10_Zara_AI_Assistant.png',
-      ],
-      tags: ['geoscience', 'data-ai', 'beyond-work'],
-      priority: 95,
-      featured: true,
-      published: true
-    },
-    create: {
-      title: 'GeoSurvai: A New Standard for Oil & Gas Exploration Monitoring',
-      slug: 'geosurvai',
-      excerpt: 'An integrated exploration management and auditing platform for SKK Migas, centralizing survey workflows, cost intelligence, automated weekly reporting, and AI assistance across Indonesia.',
-      content: content,
-      coverImage: '/asset/projects/geosurvai/01_GeoSurvai_Hero.png',
-      galleryImages: [
-        '/asset/projects/geosurvai/02_Interactive_Map-1.png',
-        '/asset/projects/geosurvai/03_Project_Dashboard-1.png',
-        '/asset/projects/geosurvai/04_Contractor_form-1.png',
-        '/asset/projects/geosurvai/05_Cost_Intelligence_Dashboard-1.png',
-        '/asset/projects/geosurvai/06_Study_dashboard-1.png',
-        '/asset/projects/geosurvai/07_Exploration_catalog.png',
-        '/asset/projects/geosurvai/08_Annual_Seismic_Parameter.png',
-        '/asset/projects/geosurvai/09_Automated_Weekly_Report.png',
-        '/asset/projects/geosurvai/10_Zara_AI_Assistant.png',
-      ],
-      tags: ['geoscience', 'data-ai', 'beyond-work'],
-      priority: 95,
-      featured: true,
-      published: true
-    }
+    where: { slug: SLUG },
+    update: { ...record, content },
+    create: { ...record, slug: SLUG, content },
   })
 
-  console.log('Seed geosurvai v2 completed successfully!')
+  const after = await prisma.project.findUnique({ where: { slug: SLUG } })
+  if (!after || after.content !== content || after.title !== record.title) throw new Error('The row read back is not what was written')
+  console.log('Seed geosurvai completed and verified.')
 }
 
 async function main() {
-  let retries = 5;
-  while (retries > 0) {
-    try {
-      await seed();
-      break;
-    } catch (e: any) {
-      retries--;
-      console.warn(`Database connection attempt failed (${e.message}). Retries left: ${retries}`);
-      if (retries === 0) throw e;
-      await new Promise(res => setTimeout(res, 3000));
+  const dryRun = process.argv.includes('--dry-run')
+  const prisma = new PrismaClient()
+  let retries = 5
+  try {
+    while (retries > 0) {
+      try {
+        await seed(prisma, dryRun)
+        break
+      } catch (e) {
+        retries--
+        const message = e instanceof Error ? e.message : String(e)
+        console.warn(`Seed attempt failed (${message}). Retries left: ${retries}`)
+        if (retries === 0) throw e
+        await new Promise((res) => setTimeout(res, 3000))
+      }
     }
+  } finally {
+    await prisma.$disconnect()
   }
 }
 
-main()
-  .catch(e => {
-    console.error(e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})

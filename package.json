@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
+    "check:article": "tsx src/scripts/check-article.ts",
+    "seed:geosurvai": "tsx src/scripts/seed-geosurvai.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

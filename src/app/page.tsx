@@ -10,6 +10,9 @@ import { SplitLayout } from "@/components/layout/SplitLayout";
 import { impactData } from "@/data/impact";
 import { socials } from "@/data/socials";
 
+// the projects come from the database: render on every request so a seed shows without a redeploy
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   let featuredProjects: any[] = [];
   try {

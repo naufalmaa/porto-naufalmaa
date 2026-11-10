@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/badge"
 import prisma from "@/lib/prisma"
 import { SplitLayout } from "@/components/layout/SplitLayout"
 
+// the projects come from the database: render on every request so a seed shows without a redeploy
+export const dynamic = "force-dynamic";
+
 export default async function ProjectsPage() {
   let projects: any[] = [];
   try {
