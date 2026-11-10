@@ -46,13 +46,14 @@ Source (hanya referensi): `D:\Naufal\Working Folder\Project\waviv_product\waviv_
 - [x] Metrik model dicek ulang di DB demo: base rate 14 hari 4,8%, presisi pada ambang 0,10 sebesar 23,8% (sekitar 5x)
 - [x] Capture dari demo lokal: 13 screenshot WebP, grafik model, video cover dan video Zara (MP4), cover 16:9, og.jpg; scan nama asli 0 temuan
 - [x] Artikel `public/asset/article/proview-v1.md` dan `src/scripts/seed-proview.ts` + `pnpm seed:proview`; `pnpm check:article` dan type-check lolos
-- [x] Dokumen fitur di repo Proview dikoreksi (belum di-commit di repo itu)
+- [x] Dokumen fitur di repo Proview dikoreksi
+- [x] Review oleh Naufal; commit dan push ke `master` (d6b68bb), deploy Vercel
+- [x] `pnpm seed:proview` ke database produksi, halaman live dicek (desktop dan ponsel: tanpa error, gambar dan video termuat)
+- [x] Dokumen fitur di-commit di repo Proview, branch `demo-ver` (6722614)
 
 ## Berikutnya
 
-- [ ] Review artikel dan aset oleh Naufal
-- [ ] Commit dan push ke `master` (minta izin dulu), tunggu deploy Vercel
-- [ ] `pnpm seed:proview` ke database produksi (minta izin dulu), lalu cek halaman live dan preview link
+- [ ] Push branch `demo-ver` repo Proview (kalau diminta)
 
 ## Catatan
 
