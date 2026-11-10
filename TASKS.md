@@ -31,3 +31,30 @@ Pelacak pekerjaan untuk halaman proyek Geosurvai. Aturan kerja:
 - Bagian Impact di `src/data/impact.ts` diimpor di beranda tetapi belum ditampilkan di halaman mana pun.
 - `public/asset/projects/geoporto/` masih memuat `Presentation1.pptx` dan folder `raw` yang bisa diunduh langsung.
 - Markup artikel (marker `[VIDEO: ...]`, `[CAROUSEL: ...]`, blok ` ```flow `, dst.) dijelaskan di komentar `src/lib/article.ts`. Cek artikel tanpa database: `pnpm check:article`.
+
+---
+
+# TASKS — Case study Proview di portofolio
+
+Source (hanya referensi): `D:\Naufal\Working Folder\Project\waviv_product\waviv_nav_pro\proview_production`, branch `demo-ver`. Screenshot dan video hanya dari DB demo `proview_production_demo_anon` (PT Nusa Hulu Energi, fiktif). Klien boleh disebut "Production & Operation Team, PHE OSES", data tetap demo. Proposal: https://claude.ai/artifact/N8qg7xpEzwVaqkcYCTm4dF
+
+## Selesai
+
+- [x] Review repo Proview: riwayat git per kontributor, dokumen fitur, catatan model EWS, rencana anonimisasi
+- [x] Proposal disetujui (sudut cerita EWS, struktur, wireframe); saran 5 (tautan silang dengan Geosurvai) tidak dipakai
+- [x] Jumlah baris produksi dihitung di DB non-anonim: 11.384.923 baris harian per sumur, 1970–2025
+- [x] Metrik model dicek ulang di DB demo: base rate 14 hari 4,8%, presisi pada ambang 0,10 sebesar 23,8% (sekitar 5x)
+- [x] Capture dari demo lokal: 13 screenshot WebP, grafik model, video cover dan video Zara (MP4), cover 16:9, og.jpg; scan nama asli 0 temuan
+- [x] Artikel `public/asset/article/proview-v1.md` dan `src/scripts/seed-proview.ts` + `pnpm seed:proview`; `pnpm check:article` dan type-check lolos
+- [x] Dokumen fitur di repo Proview dikoreksi (belum di-commit di repo itu)
+
+## Berikutnya
+
+- [ ] Review artikel dan aset oleh Naufal
+- [ ] Commit dan push ke `master` (minta izin dulu), tunggu deploy Vercel
+- [ ] `pnpm seed:proview` ke database produksi (minta izin dulu), lalu cek halaman live dan preview link
+
+## Catatan
+
+- Akun admin demo lokal `portfolio-demo@waviv.test` dibuat di `proview_production_demo_anon` untuk capture.
+- Halaman Upload Data kosong di demo (tidak ada riwayat upload), jadi tidak dipakai di artikel.

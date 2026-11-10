@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit",
     "check:article": "tsx src/scripts/check-article.ts",
     "seed:geosurvai": "tsx src/scripts/seed-geosurvai.ts",
+    "seed:proview": "tsx src/scripts/seed-proview.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
