@@ -16,7 +16,7 @@ const SLUG = 'proview'
 const ARTICLE = 'public/asset/article/proview-v1.md'
 
 const record = {
-  title: 'Proview: Catching Well Failures Before the Boat Leaves',
+  title: 'Proview: From Daily Production Reports to an Early Warning System',
   excerpt:
     'An early warning system for an offshore operator that scores every well daily, turns the risk into a boat visit plan, and lets Zara answer questions without inventing a number.',
   coverImage: '/asset/projects/proview/cover.webp',
