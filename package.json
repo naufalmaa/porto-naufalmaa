@@ -11,6 +11,7 @@
     "check:article": "tsx src/scripts/check-article.ts",
     "seed:geosurvai": "tsx src/scripts/seed-geosurvai.ts",
     "seed:proview": "tsx src/scripts/seed-proview.ts",
+    "seed:safeview": "tsx src/scripts/seed-safeview.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
