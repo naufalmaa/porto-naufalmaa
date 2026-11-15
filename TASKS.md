@@ -84,11 +84,16 @@ Keputusan Naufal:
 - [x] Artikel diperbarui: judul, Overview (PHE OSES disebut sekali), panel fakta, bagian "Beyond HSE", paragraf demo tiga tingkat; `pnpm check:article` dan type-check lolos
 - [x] Pratinjau lokal (`porto_preview`, `next dev` :3005): desktop dan ponsel tanpa error, tanpa scroll horizontal, kedua video termuat
 
+## Rilis 2026-11-16
+
+- [x] Review dan izin publish dari Naufal
+- [x] Commit 2ea9de1 dan push ke `master` (remote `porto-naufalmaa`); deploy Vercel menyajikan aset baru
+- [x] `pnpm seed:safeview` ke database produksi (dry run dulu; baris baru, jadi tidak ada backup)
+- [x] Halaman live dicek: beranda, `/projects`, `/projects/safeview`; desktop dan ponsel tanpa error, tanpa scroll horizontal, kedua video dan semua aset 200
+
 ## Berikutnya
 
-- [ ] Review oleh Naufal
-- [ ] Commit dan push ke `master` (izin dulu)
-- [ ] `pnpm seed:safeview` ke database produksi (izin terpisah), cek halaman live desktop dan ponsel
+- [ ] Push 2: perbarui TASKS.md ini (izin dulu)
 
 ## Catatan
 
