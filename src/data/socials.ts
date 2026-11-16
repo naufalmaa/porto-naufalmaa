@@ -7,22 +7,22 @@ export interface SocialLink {
 export const socials: SocialLink[] = [
   {
     platform: 'LinkedIn',
-    url: 'https://www.linkedin.com/in/naufal-muhamad-adzkia/', // Placeholder
+    url: 'https://www.linkedin.com/in/naufal-muhamad-adzkia/',
     icon: 'linkedin'
   },
   {
     platform: 'GitHub',
-    url: 'https://github.com/naufalmaa', // Placeholder
+    url: 'https://github.com/naufalmaa',
     icon: 'github'
   },
   {
     platform: 'Email',
-    url: 'mailto:naufalmadzkia@gmail.com', // Placeholder
+    url: 'mailto:naufalmadzkia@gmail.com',
     icon: 'mail'
   },
   {
     platform: 'Resume',
-    url: 'asset/resume/CV ATS_Naufal MA.pdf', // Placeholder
+    url: '/asset/resume/CV_Naufal_MA_Data_Scientist_ML.pdf',
     icon: 'file-text'
   }
 ];

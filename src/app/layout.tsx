@@ -11,8 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Naufal — Geoscience + Data & AI + Digital Product Building",
-  description: "Bridging Geoscience, Data & AI, and Digital Products.",
+  title: "Naufal Muhamad Adzkia — Data scientist for energy operations",
+  description:
+    "Case studies in time-series ML, decision support, and evaluated AI agents for oil and gas operations in Indonesia, by a geological engineer turned data scientist.",
 };
 
 export default function RootLayout({

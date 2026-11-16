@@ -2,29 +2,17 @@ import { PillarData } from './types';
 
 export const geoscienceData: PillarData = {
   title: 'Geoscience',
-  description: 'Understanding the physical world through geology, spatial analysis, environmental studies, and technical consulting.',
+  description:
+    'I read the subsurface like a geologist and build like a data scientist. The models and systems below are shaped by what the field data really means.',
   topics: [
-    'Geological Engineering',
-    'GIS',
-    'Mapping',
-    'Exploration',
-    'Mining',
-    'Environmental Consulting',
-    'Geological Data Management',
-    'Resource Modeling',
+    'Subsurface data management',
+    'PPDM 3.9',
+    'Production surveillance',
+    'Seismic acquisition',
+    'GIS and PostGIS',
+    'Field geology',
+    'Hydrogeology',
     'QA/QC',
   ],
-  coverImage: '/images/geoscience-cover.jpg', // Placeholder
   href: '/geoscience',
-  projects: [
-    {
-      id: 'geological-modeling',
-      title: 'Advanced Geological Modeling',
-      summary: '3D modeling of complex resource bodies for optimized extraction.',
-      category: 'Geoscience',
-      heroImage: '/images/geo-project-1.jpg', // Placeholder
-      featured: true,
-      content: 'Detailed breakdown of the geological modeling project...',
-    },
-  ],
 };

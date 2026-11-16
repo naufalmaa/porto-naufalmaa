@@ -1,111 +1,168 @@
 import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, ExternalLink, FileText, Mail, Map, Database, Lightbulb, Globe, Code } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import prisma from "@/lib/prisma";
+import { ArrowRight, ExternalLink, FileText, Mail, Globe, Code } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
 
 import { SplitLayout } from "@/components/layout/SplitLayout";
-import { impactData } from "@/data/impact";
+import { ProjectList, StatusChip } from "@/components/portfolio/ProjectCard";
+import { getShowcase } from "@/lib/showcase";
+import { capabilities, featuredCase, principles } from "@/data/impact";
 import { socials } from "@/data/socials";
 
 // the projects come from the database: render on every request so a seed shows without a redeploy
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  let featuredProjects: any[] = [];
-  try {
-    featuredProjects = await prisma.project.findMany({
-      where: { published: true, featured: true },
-      orderBy: { priority: 'desc' },
-      take: 5
-    });
-  } catch (e) {
-    console.error("Database connection failed. Please configure your .env file.");
-  }
+  const featured = (await getShowcase("home")).filter((item) => item.key !== featuredCase.slug);
 
   const LeftPanel = (
     <div className="flex flex-col gap-6">
-      <div className="w-50 h-50 rounded-2xl bg-muted/50 border border-border/50 overflow-hidden flex items-center justify-center shrink-0">
-        <img src="./asset/naufal_hero_image.jpg" alt="Naufal" />
+      <div className="h-48 w-48 shrink-0 overflow-hidden rounded-2xl border border-border/50 bg-muted/50">
+        <img src="/asset/naufal_hero_image.jpg" alt="Naufal Muhamad Adzkia" className="h-full w-full object-cover" />
       </div>
 
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Naufal Muhamad Adzkia</h1>
-        <h2 className="text-xl font-medium text-muted-foreground">Bridging the Earth and Technology</h2>
+        <p className="text-xl font-medium text-foreground/90">
+          Data scientist for energy operations, from messy daily data to models people act on.
+        </p>
       </div>
 
-      <p className="text-lg leading-relaxed text-foreground/90 font-medium">
-        A Geoscientist focused on engineering modern solutions. Driven by a deep interest in how data shapes our understanding of the world, I build scalable systems to solve complex challenges from the ground up.
+      <p className="text-base leading-relaxed text-muted-foreground">
+        Geological engineer turned data scientist. I own projects end to end with oil and gas teams in Indonesia:
+        defining the label, building the model, wiring it into a decision, and saying plainly what it cannot do.
       </p>
 
-      <p className="text-base text-muted-foreground leading-relaxed">
-        5+ years across consulting, geoscience, data, AI, and product development.
+      <p className="rounded-xl border border-border/60 px-4 py-3 text-sm text-foreground/90">
+        Open to Data Scientist (ML) roles, remote from Indonesia.
       </p>
 
-      <div className="flex flex-col gap-3 mt-4">
+      <div className="grid grid-cols-2 gap-3">
         {socials.map((social) => {
           let Icon = ExternalLink;
-          if (social.icon === 'linkedin') Icon = Globe;
-          if (social.icon === 'github') Icon = Code;
-          if (social.icon === 'mail') Icon = Mail;
-          if (social.icon === 'file-text') Icon = FileText;
-
+          if (social.icon === "linkedin") Icon = Globe;
+          if (social.icon === "github") Icon = Code;
+          if (social.icon === "mail") Icon = Mail;
+          if (social.icon === "file-text") Icon = FileText;
           return (
             <Link
               key={social.platform}
               href={social.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={buttonVariants({ variant: "outline", className: "w-full justify-start gap-3 h-12 rounded-xl" })}
+              className={buttonVariants({ variant: "outline", className: "h-11 w-full justify-start gap-3 rounded-xl" })}
             >
               <Icon className="h-4 w-4 opacity-70" />
               <span>{social.platform}</span>
             </Link>
-          )
+          );
         })}
       </div>
     </div>
   );
 
   const RightPanel = (
-    <div className="flex flex-col gap-6 pt-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Featured Work</h3>
-        <Link href="/projects" className="text-sm text-primary hover:underline font-medium">View all projects &rarr;</Link>
-      </div>
-      <div className="flex flex-col gap-6">
-        {featuredProjects.map((project) => (
-          <Link key={project.id} href={`/projects/${project.slug}`} className="group relative">
-            <div className="absolute -inset-y-4 -inset-x-4 z-0 scale-95 bg-muted/40 opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100 sm:rounded-2xl" />
-            <div className="relative z-10 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
-              <div className="sm:w-1/3 shrink-0">
-                <div className="aspect-video w-full rounded-xl bg-muted overflow-hidden flex items-center justify-center border border-border/50">
-                  {project.coverImage ? (
-                    <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-xs uppercase tracking-widest text-muted-foreground">No Cover</span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <h4 className="text-xl font-bold group-hover:text-primary transition-colors">{project.title}</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">{project.excerpt}</p>
-                <div className="flex gap-2 mt-1">
-                  {project.tags.slice(0, 3).map((tag: string) => (
-                    <Badge key={tag} variant="outline" className="text-[10px] uppercase font-normal">{tag}</Badge>
-                  ))}
-                </div>
-              </div>
+    <>
+      {/* One case told end to end: problem, what I did, result */}
+      <section aria-labelledby="featured-heading" className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <span>Featured case study</span>
+            <StatusChip status="Pilot" />
+          </div>
+          <h2 id="featured-heading" className="text-2xl font-bold tracking-tight">
+            {featuredCase.title}
+          </h2>
+          <p className="text-sm text-muted-foreground">{featuredCase.client}</p>
+        </div>
+
+        <Link
+          href={featuredCase.links[0].href}
+          className="block overflow-hidden rounded-xl border border-border/60 bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <img src={featuredCase.image} alt={featuredCase.imageAlt} className="aspect-[16/9] w-full object-cover" />
+        </Link>
+
+        <dl className="grid gap-5 md:grid-cols-3">
+          {featuredCase.steps.map((step) => (
+            <div key={step.label} className="flex flex-col gap-2 border-l-2 border-primary/30 pl-4">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-primary">{step.label}</dt>
+              <dd className="text-sm leading-relaxed text-foreground/90">{step.body}</dd>
             </div>
+          ))}
+        </dl>
+
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <Link href={featuredCase.links[0].href} className={buttonVariants({ className: "gap-2 rounded-xl" })}>
+            {featuredCase.links[0].label}
+            <ArrowRight className="h-4 w-4" />
           </Link>
-        ))}
-        {featuredProjects.length === 0 && (
-          <div className="text-muted-foreground text-sm italic">No featured projects found in the database.</div>
-        )}
-      </div>
-    </div>
+          <Link
+            href={featuredCase.links[1].href}
+            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+          >
+            {featuredCase.links[1].label}
+          </Link>
+        </div>
+        <p className="text-xs text-muted-foreground">Screens use demo data with fictional names.</p>
+      </section>
+
+      <section aria-labelledby="help-heading" className="flex flex-col gap-6">
+        <h2 id="help-heading" className="text-2xl font-bold tracking-tight">
+          What I can help with
+        </h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          {capabilities.map((cap) => (
+            <div key={cap.title} className="flex flex-col gap-3 rounded-xl border border-border/60 p-5">
+              <h3 className="text-base font-semibold leading-snug">{cap.title}</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">{cap.body}</p>
+              <ul className="mt-auto flex flex-col gap-1.5 pt-1 text-sm">
+                {cap.proof.map((p) => (
+                  <li key={p.href}>
+                    <Link href={p.href} className="text-primary underline-offset-4 hover:underline">
+                      {p.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href={cap.href}
+                className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+              >
+                {cap.hrefLabel}
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="work-heading" className="flex flex-col gap-6">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 id="work-heading" className="text-2xl font-bold tracking-tight">
+            More case studies
+          </h2>
+          <Link href="/projects" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+            All projects
+          </Link>
+        </div>
+        <ProjectList items={featured} empty="No featured projects found in the database." />
+      </section>
+
+      <section aria-labelledby="how-heading" className="flex flex-col gap-6">
+        <h2 id="how-heading" className="text-2xl font-bold tracking-tight">
+          How I work
+        </h2>
+        <dl className="grid gap-6 md:grid-cols-3">
+          {principles.map((p) => (
+            <div key={p.title} className="flex flex-col gap-2">
+              <dt className="font-semibold">{p.title}</dt>
+              <dd className="text-sm leading-relaxed text-muted-foreground">{p.body}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    </>
   );
 
   return <SplitLayout left={LeftPanel} right={RightPanel} />;

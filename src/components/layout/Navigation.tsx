@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogIn } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { cn } from "@/lib/utils";
 
@@ -41,9 +40,6 @@ export function Navigation() {
           })}
         </nav>
         <div className="flex items-center space-x-2">
-          <Link href="/admin/login" className="p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-full transition-colors" title="Admin Login">
-            <LogIn className="w-4 h-4" />
-          </Link>
           <ThemeToggle />
         </div>
       </div>

@@ -101,3 +101,32 @@ Keputusan Naufal:
 - Pembuat dokumen sintetis: skrip di scratchpad sesi (`make_tiered_docs.py`), tidak masuk repo mana pun.
 - Saat menyalakan backend demo, percobaan pertama memuat `.env` bawaan, sehingga pemeriksaan skema otomatis backend sempat berjalan di `pheview_hse`. Setelah itu backend dijalankan dengan `--env-file=.env.demo`. Rubrik v5 dibaca (read-only) dari `pheview_hse`.
 - Repo HSE punya 3 berkas berubah yang belum di-commit (`.env.demo.example` backend dan csms-ai, `.env.demo` frontend); tidak disentuh.
+
+---
+
+# TASKS — Revamp halaman tab (Home, Geoscience, Data & AI, Beyond Work)
+
+Panduan: `docs/portfolio-improvement/Portfolio_Website_Improvement_Guide.md` (riset di `docs/portfolio-improvement/research-notes/`). Tidak ada perubahan skema atau seed: cara tiap proyek ditampilkan per tab ada di `src/data/showcase.ts`.
+
+## Selesai (belum di-commit)
+
+- [x] Navigasi: link `/admin/login` dihapus dari header publik (halaman admin tetap ada lewat URL)
+- [x] Resume mengarah ke `public/asset/resume/CV_Naufal_MA_Data_Scientist_ML.pdf` (file lama tetap ada)
+- [x] `src/data/showcase.ts`: urutan (Proview, SafeView, Geosurvai, GeoPorto), status, peran, satu baris hasil, dan teks + anchor per lens; AMIGA Robot Admin dan riset MCP hub sebagai item eksternal
+- [x] `src/lib/showcase.ts` + `src/components/portfolio/ProjectCard.tsx`: daftar proyek bersama untuk semua tab; proyek baru dari DB tetap muncul lewat tag
+- [x] Home: headline, positioning, status "open to", proof track 4 angka (link ke bagian artikel), 3 lens, case studies, How I work
+- [x] Geoscience: intro baru, "Where geology changed the model" (4 keputusan domain), timeline baru selaras CV, chips tanpa Mining/Resource Modeling
+- [x] Data & AI: tabel kapabilitas (hasil, metode, link bukti), chips baru, prinsip kerja
+- [x] Beyond Work: klaim kosong dihapus, "Now learning" (roadmap traditional ML), AMIGA + riset MCP + GeoPorto
+- [x] Placeholder di `src/data/*.ts` dihapus; `/geoscience/[slug]` dan `/data-ai/[slug]` redirect ke `/projects/[slug]`
+- [x] Footer CTA, metadata situs
+- [x] Skills di `.claude/skills` (lihat `skills-lock.json`)
+- [x] `tsc --noEmit` lolos; render lokal desktop + 390 px tanpa scroll horizontal dan tanpa error console
+
+## Berikutnya
+
+- [ ] Review Naufal, lalu commit dan push ke `master`
+- [ ] Cek halaman live setelah deploy Vercel
+- [ ] Bio dan pin repo GitHub
+- [ ] Update "Now learning" tiap langkah roadmap selesai (`src/app/beyond-work/page.tsx`)
+- [ ] Opsional: daftar isi artikel tidak tampil dua kali di desktop

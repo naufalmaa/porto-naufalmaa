@@ -1,87 +1,74 @@
 import * as React from "react";
 import Link from "next/link";
-import { ArrowLeft, Briefcase, Calendar, Layers } from "lucide-react";
+import { ArrowLeft, Briefcase, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { geoscienceData } from "@/data/geoscience";
 import { SplitLayout } from "@/components/layout/SplitLayout";
-import prisma from "@/lib/prisma";
+import { ProjectList } from "@/components/portfolio/ProjectCard";
+import { getShowcase } from "@/lib/showcase";
 
-// Simulated timeline data specific to Geoscience
-const timelineEvents = [
+export const dynamic = "force-dynamic";
+
+// Each card is a decision that only domain knowledge could make, linked to where it is told in full.
+const domainDecisions = [
   {
-    year: "2023 - Present",
-    role: "Geoscience Data Scientist & Analyst",
-    company: "Waviv Technologies",
-    summary:
-      "Develop AI-powered applications and data solutions for Indonesia's energy sector, supporting SKK Migas and Pertamina Hulu Energi. My work focuses on AI, machine learning, data engineering, analytics, and digital transformation for geological and operational workflows.",
-    highlights: [
-      "Develop AI-powered applications for geological, geophysical, production, and operational datasets.",
-      "Design interactive dashboards and production forecasting solutions using Python, Pandas, Plotly, and Dash.",
-      "Build and maintain PostgreSQL & MySQL databases for exploration, well, and production data.",
-      "Prototype machine learning models for oil production forecasting using regression techniques.",
-      "Develop LLM-powered AI assistants and document intelligence systems with OpenAI API, LangChain, VLLM, and Ollama.",
-      "Built an AI-assisted CSMS evaluation platform that reduced document validation time by 40–50% while achieving 80%+ AI confidence across 50+ users.",
-      "Contribute to enterprise web application development using FastAPI, Fastify, React, and Next.js from prototyping to production deployment.",
-    ],
-    technologies: [
-      "Python",
-      "SQL",
-      "Pandas",
-      "Plotly",
-      "Dash",
-      "FastAPI",
-      "Fastify",
-      "React",
-      "Next.js",
-      "PostgreSQL",
-      "MySQL",
-      "OpenAI API",
-      "LangChain",
-      "VLLM",
-      "Ollama",
-      "Machine Learning",
-      "LLM",
-    ],
+    title: "A one-day zero is not a failure",
+    body: "Of 5,260 drops to zero oil since 2019, 1,268 lasted a single day: test days and reporting gaps. Leaving them out kept 3,992 real failures to learn from.",
+    href: "/projects/proview#failure",
+    source: "Proview",
   },
   {
-    year: "2021 - 2023",
-    role: "Researcher Analyst & Site Manager",
-    company: "LAPI ITB",
+    title: "Kilometres are not square kilometres",
+    body: "2D seismic is measured in km and 3D in km². A generic text-to-SQL adds them together; the assistant was taught which unit belongs to which survey.",
+    href: "/projects/geosurvai#ask",
+    source: "Geosurvai",
+  },
+  {
+    title: "A crew cannot mobilise without permits",
+    body: "Seventeen readiness checks per survey make a stalled permit visible before it delays acquisition.",
+    href: "/projects/geosurvai#collect",
+    source: "Geosurvai",
+  },
+  {
+    title: "One standard for the subsurface",
+    body: "More than 100 tables aligned to PPDM 3.9, proven with a cell-level round-trip test of 196,207 values.",
+    href: "/projects/geosurvai#rebuild",
+    source: "Geosurvai",
+  },
+];
+
+const timelineEvents = [
+  {
+    year: "2023 to present",
+    role: "Data Scientist & Analyst",
+    company: "Waviv Technologies",
     summary:
-      "Delivered multidisciplinary geological and environmental consulting projects involving field investigations, geospatial analysis, geological modeling, and technical reporting for government and energy-sector clients.",
+      "Embedded with Indonesia's upstream oil and gas: SKK Migas for exploration oversight, and PHE OSES for offshore production and HSE. I lead products end to end, from the data model to the model in use.",
     highlights: [
-      "Conducted geological field investigations, sampling, and subsurface data acquisition.",
-      "Managed geological, environmental, and spatial datasets through validation, cleaning, and QA/QC processes.",
-      "Built structured project databases to improve data consistency and reporting quality.",
-      "Applied Petrel, QGIS, and GIS tools for geological modeling, visualization, and interpretation.",
-      "Coordinated multidisciplinary field teams while ensuring project quality, compliance, and timely delivery.",
+      "Early warning of offshore well failures from 11.4M daily records (LightGBM, time split, calibrated), piloted with PHE OSES.",
+      "Geosurvai for SKK Migas: surveys, permits, seismic parameters, and costs in one PPDM 3.9 database, with an assistant that answers 43 of 45 evaluation questions.",
+      "SafeView for the PHE OSES HSE team: AI pre-scoring of contractor safety evidence, in daily production use.",
+      "Python pipelines from daily Excel reports into a PostgreSQL datamart covering about 1,000 wells and 100 platforms.",
     ],
-    technologies: [
-      "Petrel",
-      "QGIS",
-      "ArcGIS",
-      "Global Mapper",
-      "Python",
-      "Excel",
-      "GIS",
-      "Geological Mapping",
-      "QA/QC",
-      "Field Investigation",
+    technologies: ["Python", "LightGBM", "SQL", "PostgreSQL / PostGIS", "PPDM 3.9", "Docker", "Fastify", "React"],
+  },
+  {
+    year: "2021 to 2023",
+    role: "Research Analyst & Site Manager",
+    company: "LAPI ITB",
+    summary: "Environmental and hydrogeological investigations for government and energy-sector clients.",
+    highlights: [
+      "Led a field team of about ten, including the drilling crew: shallow core logging, soil and groundwater sampling.",
+      "Managed lab results with QA/QC and traceability, and modelled the spread of hydrocarbon contamination.",
+      "Produced geological and hydrogeological maps and reports in QGIS and ArcGIS.",
     ],
+    technologies: ["QGIS", "ArcGIS", "Petrel", "Global Mapper", "Excel", "QA/QC"],
   },
 ];
 
 export default async function GeosciencePage() {
-  let projects: any[] = [];
-  try {
-    projects = await prisma.project.findMany({
-      where: { published: true, tags: { has: "geoscience" } },
-      orderBy: { priority: "desc" }
-    });
-  } catch (e) {
-    console.error("Database connection failed. Please configure your .env file.");
-  }
+  const items = await getShowcase("geoscience");
 
   const LeftPanel = (
     <div className="flex flex-col gap-6">
@@ -90,13 +77,8 @@ export default async function GeosciencePage() {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
         </Link>
       </div>
-      <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-        {geoscienceData.title}
-      </h1>
-      <p className="text-lg text-muted-foreground leading-relaxed">
-        {geoscienceData.description}
-      </p>
-
+      <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{geoscienceData.title}</h1>
+      <p className="text-lg text-muted-foreground leading-relaxed">{geoscienceData.description}</p>
       <div className="flex flex-wrap gap-2 mt-2">
         {geoscienceData.topics.map((topic) => (
           <Badge key={topic} variant="secondary" className="font-normal text-xs">
@@ -104,15 +86,16 @@ export default async function GeosciencePage() {
           </Badge>
         ))}
       </div>
-
-      <div className="mt-8 border-l-2 border-primary/20 pl-4">
-        <h2 className="text-lg font-semibold mb-2">The Foundation</h2>
+      <div className="mt-6 border-l-2 border-primary/20 pl-4">
+        <h2 className="text-lg font-semibold mb-2">The foundation</h2>
         <div className="space-y-3 text-muted-foreground text-sm leading-relaxed">
           <p>
-            My journey began in the field, observing the physical world and trying to make sense of complex, hidden structures.
+            I started in the field: logging cores, sampling groundwater, and running a drilling crew. Geology taught me to
+            work with sparse data and to say how sure I am.
           </p>
           <p>
-            Geology taught me how to think in 3D, how to work with sparse data, and how to manage uncertainty—skills that naturally translated into building digital systems.
+            Today that shows up in the data work: in how a failure is labelled, which units can be added, and which
+            numbers a model is allowed to claim.
           </p>
         </div>
       </div>
@@ -121,108 +104,74 @@ export default async function GeosciencePage() {
 
   const RightPanel = (
     <>
-      {/* Experience Timeline */}
-      <section>
-        <h2 className="text-2xl font-bold tracking-tight mb-8">Experience</h2>
-        <div className="max-w-3xl border-l border-border/50 ml-4 md:ml-0 pl-6 md:pl-8 space-y-10">
-          {timelineEvents.map((event, index) => (
-            <div key={index} className="relative group">
-              <span className="absolute -left-[31px] md:-left-[39px] top-6 w-3.5 h-3.5 rounded-full bg-background border-2 border-primary group-hover:bg-primary transition-colors" />
-              
-              <div className="bg-card/40 hover:bg-card/60 transition-all border border-border/60 hover:border-primary/30 rounded-xl p-6 space-y-5">
-                {/* Header: Year, Role, Company */}
-                <div className="flex flex-col gap-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary tracking-wider uppercase">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {event.year}
-                    </span>
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">
-                    {event.role}
-                  </h3>
-                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <Briefcase className="w-4 h-4 text-primary/70 shrink-0" />
-                    <span>{event.company}</span>
-                  </div>
-                </div>
-
-                {/* Summary */}
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                  {event.summary}
-                </p>
-
-                {/* Highlights */}
-                {event.highlights && event.highlights.length > 0 && (
-                  <div className="space-y-2.5 pt-1">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
-                      Key Highlights & Contributions
-                    </h4>
-                    <ul className="space-y-2">
-                      {event.highlights.map((highlight, hIndex) => (
-                        <li key={hIndex} className="flex items-start gap-2.5 text-sm text-muted-foreground leading-relaxed">
-                          <span className="mt-2 w-1.5 h-1.5 rounded-full bg-primary/80 shrink-0" />
-                          <span>{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Technologies */}
-                {event.technologies && event.technologies.length > 0 && (
-                  <div className="pt-2 border-t border-border/40">
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-2.5">
-                      <Layers className="w-3.5 h-3.5 text-primary/70" />
-                      <span>Technologies & Skills</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {event.technologies.map((tech) => (
-                        <Badge
-                          key={tech}
-                          variant="secondary"
-                          className="text-xs font-normal bg-secondary/60 hover:bg-secondary text-secondary-foreground transition-colors"
-                        >
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+      <section aria-labelledby="decisions-heading" className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <h2 id="decisions-heading" className="text-2xl font-bold tracking-tight">
+            Where geology changed the model
+          </h2>
+          <p className="text-sm text-muted-foreground">Four decisions a generic data team would likely have got wrong.</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {domainDecisions.map((d) => (
+            <Link
+              key={d.title}
+              href={d.href}
+              className="flex flex-col gap-2 rounded-xl border border-border/60 p-5 transition-colors hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <span className="font-semibold leading-snug">{d.title}</span>
+              <span className="text-sm leading-relaxed text-muted-foreground">{d.body}</span>
+              <span className="mt-auto pt-1 text-xs text-primary">Told in full in {d.source}</span>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* Featured Projects */}
-      <section className="mt-8">
-        <h2 className="text-2xl font-bold tracking-tight mb-8">Case Studies & Projects</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {projects.map((project) => (
-            <Link key={project.id} href={`/projects/${project.slug}`} className="group">
-              <div className="relative aspect-video bg-muted/50 rounded-xl mb-4 overflow-hidden border border-border/50 flex items-center justify-center">
-                {project.coverImage ? (
-                  <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-muted-foreground text-sm uppercase tracking-widest">No Cover Image</span>
-                )}
-                <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="font-normal text-[10px] uppercase tracking-wider">{project.tags[0]}</Badge>
+      <section aria-labelledby="cases-heading" className="flex flex-col gap-6">
+        <h2 id="cases-heading" className="text-2xl font-bold tracking-tight">
+          Case studies, read as a geoscientist
+        </h2>
+        <ProjectList items={items} empty="No projects found for this domain yet." />
+      </section>
+
+      <section aria-labelledby="exp-heading">
+        <h2 id="exp-heading" className="text-2xl font-bold tracking-tight mb-8">
+          Experience
+        </h2>
+        <div className="max-w-3xl border-l border-border/50 ml-4 md:ml-0 pl-6 md:pl-8 space-y-10">
+          {timelineEvents.map((event) => (
+            <div key={event.company} className="relative">
+              <span className="absolute -left-[31px] md:-left-[39px] top-6 h-3.5 w-3.5 rounded-full border-2 border-primary bg-background" />
+              <div className="space-y-4 rounded-xl border border-border/60 bg-card/40 p-6">
+                <div className="flex flex-col gap-1.5">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary">
+                    <Calendar className="h-3.5 w-3.5" />
+                    {event.year}
+                  </span>
+                  <h3 className="text-xl font-bold tracking-tight">{event.role}</h3>
+                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <Briefcase className="h-4 w-4 shrink-0 text-primary/70" />
+                    <span>{event.company}</span>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold tracking-tight group-hover:underline underline-offset-4 decoration-primary/50">
-                  {project.title}
-                </h3>
-                <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">{project.excerpt}</p>
+                <p className="text-sm leading-relaxed text-muted-foreground md:text-base">{event.summary}</p>
+                <ul className="space-y-2">
+                  {event.highlights.map((h) => (
+                    <li key={h} className="flex items-start gap-2.5 text-sm leading-relaxed text-muted-foreground">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/80" />
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex flex-wrap gap-1.5 border-t border-border/40 pt-3">
+                  {event.technologies.map((tech) => (
+                    <Badge key={tech} variant="secondary" className="text-xs font-normal">
+                      {tech}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </Link>
+            </div>
           ))}
-          {projects.length === 0 && (
-            <div className="col-span-2 text-muted-foreground italic">No projects found for this domain yet.</div>
-          )}
         </div>
       </section>
     </>
